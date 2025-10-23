@@ -88,7 +88,9 @@ Configure gameplay areas with:
 - Shape (circle, rectangle, triangle, sprite, polygon)
 - Sprite sheet specifications
 - Size and color
-- Spawn position
+- **Spawn position**: Supports multiple formats:
+  - Direct coordinates: `{x: 600, y: 750}` or `{grid_x: 5, grid_y: 10}`
+  - Rule-based: `{rule: "first_room_center"}` (e.g., "first_room_center", "last_room_center", "random_room", "center", "random")
 - Speed and movement
 - Stats (health, attack, defense, level, experience)
 - Combat configuration
@@ -98,16 +100,72 @@ Configure gameplay areas with:
 
 #### Enemies
 Two configuration modes:
-- **List-based**: Individual enemy types with unique properties
-- **Formation-based**: Groups (e.g., Space Invaders style)
 
-Enemy properties include:
+**1. List-based** (for RPGs, roguelikes, etc.):
+```json
+{
+  "list": [
+    {
+      "name": "Acid Slime",
+      "type": "slimes",
+      "sprite_sheet_spec": {...},
+      "health": 30,
+      "attack": 5,
+      "defense": 2,
+      "speed": 1,
+      "experience_value": 20,
+      "gold_drop": {"min": 5, "max": 15},
+      "spawn_chance": 0.5,
+      "ai_behavior": {
+        "detection_range": 50,
+        "chase_player": false,
+        "attack_range": 30,
+        "attack_cooldown": 60
+      }
+    }
+  ],
+  "spawn_rules": {
+    "enemies_per_room": {"min": 1, "max": 3},
+    "scale_with_level": true,
+    "exclude_player_room": true,
+    "exclude_exit_room": true
+  }
+}
+```
+
+**2. Formation-based** (for Space Invaders-style games):
+```json
+{
+  "count": 50,
+  "formation": {
+    "rows": 5,
+    "columns": 10,
+    "start_x": 150,
+    "start_y": 100,
+    "spacing_x": 80,
+    "spacing_y": 60
+  },
+  "size": {"width": 40, "height": 40},
+  "color": "#FF0000",
+  "movement": {
+    "horizontal_speed": 15,
+    "descent_amount": 20,
+    "move_frequency": 40
+  },
+  "shooting": {
+    "frequency": 30,
+    "probability": 0.5
+  }
+}
+```
+
+Enemy properties (list-based):
 - Name and type
 - Visual appearance (sprite, size, color, scale)
 - Stats (health, attack, defense, speed)
 - Experience value and gold drops
-- Spawn chance
-- AI behavior (detection range, chase, patrol, flee)
+- Spawn chance and spawn rules
+- AI behavior (detection range, chase_player, attack_range, attack_cooldown, patrol, flee_on_low_health)
 
 #### Items
 - Name and type
@@ -261,8 +319,15 @@ Target multiple platforms (web, desktop, mobile, console) with appropriate engin
 ## Data Types and Definitions
 
 ### Position Configuration
-- Pixel coordinates: `{x, y}`
-- Grid coordinates: `{grid_x, grid_y}`
+Supports multiple formats for positioning entities:
+- **Pixel coordinates**: `{"x": 600, "y": 750}`
+- **Grid coordinates**: `{"grid_x": 5, "grid_y": 10}`
+
+### Spawn Position Configuration
+Extends position configuration with rule-based options:
+- **Direct coordinates**: Same as position configuration
+- **Rule-based positioning**: `{"rule": "first_room_center"}`
+  - Available rules: `"first_room_center"`, `"last_room_center"`, `"random_room"`, `"center"`, `"random"`
 
 ### Size Configuration
 - Circular: `{radius}`

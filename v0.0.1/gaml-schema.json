@@ -435,11 +435,16 @@
             },
             {
               "type": "object",
+              "description": "Rule-based spawn position",
               "properties": {
                 "rule": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Spawn position rule",
+                  "examples": ["first_room_center", "last_room_center", "random_room", "center", "random"]
                 }
-              }
+              },
+              "required": ["rule"],
+              "additionalProperties": false
             }
           ]
         },
