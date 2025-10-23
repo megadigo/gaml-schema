@@ -342,19 +342,43 @@ Extends position configuration with rule-based options:
 ```
 
 ### Sprite Sheet Specification
-- Asset reference
-- Sprite positions for different states/directions
-- Size and scale
+Define animated sprites with multiple states:
+```json
+{
+  "sprite_sheet": "sprite_sheet_asset_id",
+  "sprite_positions": {
+    "right": {"row": 9, "col": 17},
+    "down": {"row": 9, "col": 18},
+    "up": {"row": 9, "col": 19},
+    "left": {"row": 9, "col": 20}
+  },
+  "size": {"width": 16, "height": 16},
+  "scale": 1.5
+}
+```
 
 ### Color Format
 Hex color codes: `#RRGGBB` (e.g., `#FF0000` for red)
 
+### AI Behavior Configuration
+Define enemy intelligence and behavior patterns:
+```json
+{
+  "detection_range": 100,
+  "chase_player": true,
+  "attack_range": 30,
+  "attack_cooldown": 60,
+  "patrol": false,
+  "flee_on_low_health": false
+}
+```
+
 ## Example Use Cases
 
-1. **Roguelike RPG**: Define dungeon generation, character stats, combat mechanics, and loot system
-2. **Maze Chase Game**: Configure maze layout, ghost AI behaviors, pellet collection, and power-ups
-3. **Space Shooter**: Set up enemy formations, projectile systems, wave progression, and scoring
-4. **Platformer**: Design level layouts, physics parameters, enemy patterns, and collectibles
+1. **Roguelike RPG**: Define dungeon generation with procedural algorithms, multiple enemy types with unique AI behaviors, character progression system, combat mechanics, and loot drops
+2. **Maze Chase Game**: Configure maze layout generation, ghost AI with chase/patrol behaviors, pellet collection mechanics, power-ups, and scoring
+3. **Space Shooter**: Set up enemy formations with synchronized movement, projectile systems for player and enemies, wave-based progression, and score multipliers
+4. **Platformer**: Design level layouts with physics-based movement, enemy patterns and spawning rules, collectible items, and win conditions
 
 ## Validation
 
