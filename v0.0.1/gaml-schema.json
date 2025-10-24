@@ -1,1463 +1,1435 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/megadigo/gaml-schema/v0.0.1",
-  "version": "0.0.1",
-  "title": "Game AI Markup Language (GAML) Schema",
-  "description": "Universal schema for Game AI Markup Language - supports any game genre for single-prompt game generation",
+  "$id": "https://github.com/megadigo/gaml-schema/blob/main/v0.0.1/gaml-schema.json",
+  "title": "GAML (Game AI Metadata Language) Schema",
+  "description": "Schema for defining complete game metadata specifications that can be used to generate playable games through AI assistance. GAML files describe game mechanics, entities, rendering, state management, and implementation requirements in a structured format.",
   "type": "object",
   "required": ["file", "version", "description", "schema", "game", "project", "window"],
   "properties": {
     "file": {
       "type": "string",
-      "description": "The filename of this GAML metadata file",
-      "pattern": "^.*\\.gaml$"
+      "description": "The filename of this GAML metadata file. Should match the actual file name and include the .gaml extension."
     },
     "version": {
       "type": "string",
-      "description": "Version of the GAML specification being used",
-      "pattern": "^\\d+\\.\\d+$"
+      "description": "Version number of this GAML specification file. Follows semantic versioning (e.g., '1.0', '2.0')."
     },
     "description": {
       "type": "string",
-      "description": "Multi-line description of what this game specification defines"
+      "description": "Detailed multi-line description of what this GAML file contains, including the game type, implementation approach, and key features."
     },
     "schema": {
       "type": "string",
       "format": "uri",
-      "description": "URI reference to this GAML schema for validation"
+      "description": "URL pointing to the GAML schema definition file that this document conforms to. Used for validation and documentation."
     },
     "game": {
       "type": "object",
-      "required": ["name", "type", "version", "description"],
+      "description": "Core game identification and configuration. Defines the game's name, type, genre, and credits.",
+      "required": ["name", "type", "description"],
       "properties": {
         "name": {
           "type": "string",
-          "description": "Display name of the game"
+          "description": "The official title/name of the game as it should appear to players."
         },
         "type": {
           "type": "string",
-          "description": "Genre or category of the game",
-          "examples": ["Action RPG", "Maze Chase", "2D Shooter", "Platformer", "Puzzle", "Strategy", "Racing", "Fighting", "Card Game", "Tower Defense"]
+          "description": "The game genre or category (e.g., '2D Shooter', 'Action RPG', 'Maze Chase')."
         },
         "extend": {
           "type": "string",
-          "description": "Optional base game template to extend from",
-          "examples": ["classic_roguelike", "classic_pacman", "classic_shooter", "classic_platformer", "classic_puzzle"]
+          "description": "Optional base game type or archetype this game extends (e.g., 'classic_roguelike', 'classic_pacman')."
+        },
+        "engine": {
+          "type": "string",
+          "description": "Game engine or rendering framework to use (e.g., 'HTML5_Canvas')."
+        },
+        "language": {
+          "type": "string",
+          "description": "Primary programming language for implementation (e.g., 'Javascript', 'Python')."
         },
         "version": {
           "type": "string",
-          "description": "Game version number",
-          "pattern": "^\\d+\\.\\d+$"
+          "description": "Version number of the game itself (not the GAML file version). This is optional."
         },
         "description": {
           "type": "string",
-          "description": "Detailed description of the game mechanics and features"
+          "description": "Brief, player-facing description of the game's core gameplay and features."
+        },
+        "credits": {
+          "type": "object",
+          "description": "Attribution information for developers, contributors, and licenses.",
+          "properties": {
+            "developer": {
+              "type": "string",
+              "description": "Primary developer(s) name and contact information."
+            },
+            "contributors": {
+              "type": "array",
+              "description": "List of additional contributors including AI assistants, artists, sound designers, etc.",
+              "items": {
+                "type": "string",
+                "description": "Name and role of a contributor."
+              }
+            },
+            "license": {
+              "type": "string",
+              "description": "Software license type (e.g., 'MIT', 'GPL', 'Apache 2.0')."
+            }
+          }
         }
       }
     },
     "project": {
       "type": "object",
+      "description": "Project structure and build configuration. Defines the project folder structure, target platform, and entry points.",
       "required": ["name", "target"],
       "properties": {
         "name": {
           "type": "string",
-          "description": "Project directory name (should match folder structure)"
+          "description": "Project folder/directory name. Should be lowercase with underscores or hyphens."
         },
         "target": {
           "type": "string",
-          "description": "Target deployment platform",
-          "enum": ["web_browser", "desktop", "mobile", "console"]
+          "description": "Target platform for deployment (e.g., 'web_browser', 'desktop', 'mobile')."
         },
         "page": {
           "type": "string",
-          "description": "Main HTML file name for web games",
-          "default": "index.html"
-        },
-        "engine": {
-          "type": "string",
-          "description": "Rendering/game engine to use",
-          "example": ["HTML5_Canvas", "WebGL", "SVG", "DOM", "Three.js", "Phaser"]
-        },
-        "language": {
-          "type": "string",
-          "description": "Primary programming language",
-          "enum": ["Javascript", "TypeScript", "Python", "Java", "C#", "C++", "Rust", "Lua"]
+          "description": "Main HTML entry point file (e.g., 'index.html'). Required for web-based games."
         },
         "structure": {
           "type": "array",
-          "description": "Expected project file structure",
+          "description": "List of files and folders that make up the project structure.",
           "items": {
-            "type": "string"
+            "type": "string",
+            "description": "File or folder path with description (e.g., 'index.html (main game file)')."
           }
+        },
+        "engine": {
+          "type": "string",
+          "description": "Game engine or framework (e.g., 'HTML5_Canvas', 'Phaser', 'Unity')."
+        },
+        "language": {
+          "type": "string",
+          "description": "Programming language for the project (e.g., 'Javascript', 'TypeScript')."
         }
       }
     },
     "implementation": {
       "type": "object",
-      "description": "Implementation-specific configuration",
+      "description": "Technical implementation details and constraints for the AI to follow when generating code.",
       "properties": {
         "approach": {
           "type": "string",
-          "enum": ["single_file_html", "multi_file", "module_based", "webpack_bundled"]
+          "description": "Development approach (e.g., 'single_file_html' means all HTML, CSS, and JS in one file)."
         },
         "dependencies": {
           "type": "string",
-          "example": ["none", "Bevy", "", "Babylon .js", "Melon.js"]
+          "description": "External dependencies required (e.g., 'none', 'jquery', 'phaser'). Use 'none' for vanilla implementations."
         },
         "canvas_id": {
           "type": "string",
-          "description": "HTML canvas element ID"
-        }
-      }
-    },
-    "assets": {
-      "type": "array",
-      "description": "Game assets and resources",
-      "items": {
-        "type": "object",
-        "required": ["type", "id", "path"],
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": ["image", "audio", "font", "data", "sprite_sheet", "tilemap", "video"]
-          },
-          "id": {
-            "type": "string",
-            "description": "Unique identifier for referencing this asset"
-          },
-          "path": {
-            "type": "string",
-            "description": "Relative path to the asset file"
-          },
-          "tile_size": {
-            "type": "integer",
-            "description": "Size of individual tiles (for sprite sheets)"
-          },
-          "grid_size": {
-            "type": "array",
-            "description": "Grid dimensions [columns, rows] for sprite sheets",
-            "items": {
-              "type": "integer"
-            },
-            "minItems": 2,
-            "maxItems": 2
-          },
-          "format": {
-            "type": "string",
-            "description": "File format (png, jpg, mp3, ogg, etc.)"
-          }
+          "description": "HTML element ID for the canvas element (e.g., 'game-canvas')."
         }
       }
     },
     "window": {
       "type": "object",
-      "required": ["width", "height", "title"],
+      "description": "Game window/canvas dimensions and display settings.",
+      "required": ["width", "height"],
       "properties": {
         "width": {
-          "type": "integer",
-          "minimum": 100,
-          "maximum": 3840,
-          "description": "Canvas/window width in pixels"
+          "type": "number",
+          "description": "Canvas width in pixels. Defines the horizontal resolution of the game area."
         },
         "height": {
-          "type": "integer",
-          "minimum": 100,
-          "maximum": 2160,
-          "description": "Canvas/window height in pixels"
+          "type": "number",
+          "description": "Canvas height in pixels. Defines the vertical resolution of the game area."
         },
         "title": {
           "type": "string",
-          "description": "Window title or page title"
-        },
-        "resizable": {
-          "type": "boolean",
-          "description": "Whether window/canvas can be resized"
-        },
-        "fullscreen": {
-          "type": "boolean",
-          "description": "Support for fullscreen mode"
+          "description": "Browser window/tab title. Appears in the browser tab and bookmarks."
+        }
+      }
+    },
+    "assets": {
+      "type": "array",
+      "description": "External asset files like images, audio, and sprite sheets used by the game.",
+      "items": {
+        "type": "object",
+        "description": "Configuration for a single asset file.",
+        "required": ["type", "id", "path"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["image", "audio", "spritesheet", "font"],
+            "description": "Asset type category (image, audio, spritesheet, or font)."
+          },
+          "id": {
+            "type": "string",
+            "description": "Unique identifier used to reference this asset in code."
+          },
+          "path": {
+            "type": "string",
+            "description": "Relative file path to the asset from the project root."
+          },
+          "tile_size": {
+            "type": "number",
+            "description": "For sprite sheets: the size of each individual sprite/tile in pixels (assumes square tiles)."
+          },
+          "grid_size": {
+            "type": "array",
+            "description": "For sprite sheets: dimensions as [rows, columns] defining the grid layout.",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          }
         }
       }
     },
     "game_world": {
       "type": "object",
-      "description": "Game world configuration (for RPGs, dungeon crawlers, etc.)",
-      "additionalProperties": {
-        "$ref": "#/definitions/world_config"
+      "description": "Game world configuration including terrain, dungeon generation, or level layouts.",
+      "properties": {
+        "dungeon": {
+          "type": "object",
+          "description": "Procedural dungeon generation settings for roguelike/dungeon crawler games.",
+          "properties": {
+            "grid_size": {
+              "type": "number",
+              "description": "Size of each grid cell in pixels. Determines the granularity of the dungeon layout."
+            },
+            "rows": {
+              "type": "number",
+              "description": "Number of rows in the dungeon grid. Total height = rows * grid_size."
+            },
+            "columns": {
+              "type": "number",
+              "description": "Number of columns in the dungeon grid. Total width = columns * grid_size."
+            },
+            "offset_x": {
+              "type": "number",
+              "description": "Horizontal offset in pixels from the left edge of the canvas to start drawing the dungeon."
+            },
+            "offset_y": {
+              "type": "number",
+              "description": "Vertical offset in pixels from the top edge of the canvas to start drawing the dungeon."
+            },
+            "generation_rules": {
+              "type": "object",
+              "description": "Rules and parameters for procedural dungeon generation algorithm.",
+              "properties": {
+                "algorithm": {
+                  "type": "string",
+                  "description": "Dungeon generation algorithm to use (e.g., 'Binary Space Partition', 'Depth-First Search', 'Cellular Automata')."
+                },
+                "generation": {
+                  "type": "string",
+                  "description": "When to generate dungeons (e.g., 'random_each_dungeon_level', 'random_each_level', 'fixed_seed', 'random')."
+                },
+                "rooms": {
+                  "type": "object",
+                  "description": "Room generation parameters for BSP and room-based algorithms.",
+                  "properties": {
+                    "room_count": {
+                      "type": "number",
+                      "description": "Minimum number of rooms to generate per dungeon level."
+                    },
+                    "room_min_size": {
+                      "type": "number",
+                      "description": "Minimum room dimension in grid cells. Rooms will be at least this size."
+                    },
+                    "room_max_size": {
+                      "type": "number",
+                      "description": "Maximum room dimension in grid cells. Rooms will not exceed this size."
+                    },
+                    "corridor_width": {
+                      "type": "number",
+                      "description": "Width of corridors connecting rooms, measured in grid cells."
+                    }
+                  }
+                },
+                "floor_color": {
+                  "type": "string",
+                  "description": "Hex color code for walkable floor tiles (e.g., '#4A3728')."
+                },
+                "walls": {
+                  "type": "object",
+                  "description": "Wall rendering configuration.",
+                  "properties": {
+                    "color": {
+                      "type": "string",
+                      "description": "Hex color code for wall tiles (e.g., '#2C1810')."
+                    },
+                    "render": {
+                      "type": "string",
+                      "description": "Canvas rendering method to use (e.g., 'fillRect', 'strokeRect')."
+                    }
+                  }
+                },
+                "exit_stairs": {
+                  "type": "object",
+                  "description": "Configuration for level exit/stairs that lead to the next dungeon floor.",
+                  "properties": {
+                    "color": {
+                      "type": "string",
+                      "description": "Hex color code for the exit stairs visual (e.g., '#FFD700' for gold)."
+                    },
+                    "spawn_rule": {
+                      "type": "string",
+                      "description": "Rule for where to spawn the exit (e.g., 'farthest_room_from_player', 'random_room')."
+                    },
+                    "requires": {
+                      "type": "string",
+                      "description": "Condition that must be met before exit appears (e.g., 'all_enemies_defeated', 'key_collected')."
+                    },
+                    "detection_radius": {
+                      "type": "number",
+                      "description": "Distance in pixels the player must be within to trigger exit interaction."
+                    },
+                    "interaction": {
+                      "type": "string",
+                      "description": "How the player interacts with the exit (e.g., 'automatic_on_proximity', 'press_key')."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "gameplayground": {
       "type": "object",
-      "description": "Gameplay area configuration (for maze games, puzzles, etc.)",
-      "additionalProperties": {
-        "$ref": "#/definitions/playground_config"
+      "description": "Alternative to game_world for maze-based or grid-based game areas (used in Pac-Man style games).",
+      "properties": {
+        "maze": {
+          "type": "object",
+          "description": "Maze configuration and generation rules.",
+          "properties": {
+            "grid_size": {
+              "type": "number",
+              "description": "Size of each maze cell in pixels."
+            },
+            "rows": {
+              "type": "number",
+              "description": "Number of rows in the maze grid."
+            },
+            "columns": {
+              "type": "number",
+              "description": "Number of columns in the maze grid."
+            },
+            "offset_x": {
+              "type": "number",
+              "description": "Horizontal offset to center the maze on the canvas."
+            },
+            "offset_y": {
+              "type": "number",
+              "description": "Vertical offset from the top of the canvas."
+            },
+            "generation_rules": {
+              "type": "object",
+              "description": "Maze generation algorithm and rendering rules.",
+              "additionalProperties": true
+            }
+          }
+        }
       }
     },
     "entities": {
       "type": "object",
-      "description": "Game entities definition (players, enemies, NPCs, objects)",
+      "description": "All game entities including player character, enemies, items, and interactive objects. Each entity type has its own configuration.",
       "properties": {
         "player": {
-          "$ref": "#/definitions/player_entity"
+          "type": "object",
+          "description": "Player character configuration including appearance, stats, controls, and abilities.",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Display name for the player character (e.g., 'Hero', 'Player Ship')."
+            },
+            "type": {
+              "type": "string",
+              "description": "Entity type classification (e.g., 'player', 'hero', 'ship')."
+            },
+            "shape": {
+              "type": "string",
+              "description": "Visual shape for rendering (e.g., 'circle', 'rectangle', 'triangle')."
+            },
+            "sprite": {
+              "type": "object",
+              "description": "Sprite rendering configuration when not using sprite sheets.",
+              "properties": {
+                "color": {
+                  "type": "string",
+                  "description": "Hex color code for the sprite fill color."
+                },
+                "width": {
+                  "type": "number",
+                  "description": "Sprite width in pixels."
+                },
+                "height": {
+                  "type": "number",
+                  "description": "Sprite height in pixels."
+                }
+              }
+            },
+            "sprite_sheet_spec": {
+              "type": "object",
+              "description": "Sprite sheet configuration for animated sprites with directional facing.",
+              "properties": {
+                "sprite_sheet": {
+                  "type": "string",
+                  "description": "ID of the sprite sheet asset to use (references an asset defined in the assets array)."
+                },
+                "sprite_positions": {
+                  "type": "object",
+                  "description": "Row and column positions for each directional sprite in the sprite sheet.",
+                  "properties": {
+                    "right": {
+                      "type": "object",
+                      "description": "Sprite position when facing right.",
+                      "properties": {
+                        "row": {"type": "number", "description": "Row index in the sprite sheet (0-based)."},
+                        "col": {"type": "number", "description": "Column index in the sprite sheet (0-based)."}
+                      }
+                    },
+                    "down": {
+                      "type": "object",
+                      "description": "Sprite position when facing down.",
+                      "properties": {
+                        "row": {"type": "number", "description": "Row index in the sprite sheet (0-based)."},
+                        "col": {"type": "number", "description": "Column index in the sprite sheet (0-based)."}
+                      }
+                    },
+                    "up": {
+                      "type": "object",
+                      "description": "Sprite position when facing up.",
+                      "properties": {
+                        "row": {"type": "number", "description": "Row index in the sprite sheet (0-based)."},
+                        "col": {"type": "number", "description": "Column index in the sprite sheet (0-based)."}
+                      }
+                    },
+                    "left": {
+                      "type": "object",
+                      "description": "Sprite position when facing left.",
+                      "properties": {
+                        "row": {"type": "number", "description": "Row index in the sprite sheet (0-based)."},
+                        "col": {"type": "number", "description": "Column index in the sprite sheet (0-based)."}
+                      }
+                    }
+                  }
+                },
+                "size": {
+                  "type": "object",
+                  "description": "Size of each sprite in the sprite sheet.",
+                  "properties": {
+                    "width": {"type": "number", "description": "Sprite width in pixels."},
+                    "height": {"type": "number", "description": "Sprite height in pixels."}
+                  }
+                },
+                "scale": {
+                  "type": "number",
+                  "description": "Scaling factor to enlarge sprites for better visibility (e.g., 2 = double size)."
+                }
+              }
+            },
+            "size": {
+              "type": "object",
+              "description": "Size dimensions for collision detection and rendering.",
+              "properties": {
+                "radius": {
+                  "type": "number",
+                  "description": "Collision radius in pixels for circular entities."
+                },
+                "width": {
+                  "type": "number",
+                  "description": "Width in pixels for rectangular entities."
+                },
+                "height": {
+                  "type": "number",
+                  "description": "Height in pixels for rectangular entities."
+                }
+              }
+            },
+            "position": {
+              "type": "object",
+              "description": "Initial spawn position configuration.",
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "description": "Initial X coordinate in pixels or grid cells."
+                },
+                "y": {
+                  "type": "number",
+                  "description": "Initial Y coordinate in pixels or grid cells."
+                },
+                "spawn": {
+                  "type": "string",
+                  "description": "Spawn positioning rule (e.g., 'fixed', 'random', 'center')."
+                },
+                "rule": {
+                  "type": "string",
+                  "description": "Procedural spawn rule (e.g., 'first_room_center', 'random_floor_tile')."
+                }
+              }
+            },
+            "spawn_position": {
+              "type": "object",
+              "description": "Grid-based spawn position for grid-based movement systems.",
+              "properties": {
+                "grid_x": {
+                  "type": "number",
+                  "description": "Spawn X position in grid coordinates."
+                },
+                "grid_y": {
+                  "type": "number",
+                  "description": "Spawn Y position in grid coordinates."
+                },
+                "rule": {
+                  "type": "string",
+                  "description": "Spawn rule for procedural positioning."
+                }
+              }
+            },
+            "speed": {
+              "type": "number",
+              "description": "Movement speed in pixels per frame or as a multiplier."
+            },
+            "stats": {
+              "type": "object",
+              "description": "Player character statistics for RPG mechanics.",
+              "properties": {
+                "max_health": {
+                  "type": "number",
+                  "description": "Maximum health points. Player dies when health reaches 0."
+                },
+                "health": {
+                  "type": "number",
+                  "description": "Current/starting health points."
+                },
+                "attack": {
+                  "type": "number",
+                  "description": "Attack power. Used in damage calculations."
+                },
+                "defense": {
+                  "type": "number",
+                  "description": "Defense stat. Reduces incoming damage."
+                },
+                "level": {
+                  "type": "number",
+                  "description": "Current character level. Increases through experience."
+                },
+                "experience": {
+                  "type": "number",
+                  "description": "Current experience points accumulated."
+                },
+                "experience_to_next_level": {
+                  "type": "number",
+                  "description": "Experience points required to reach the next level."
+                }
+              }
+            },
+            "bounds": {
+              "type": "object",
+              "description": "Movement boundaries to restrict player position.",
+              "properties": {
+                "min_x": {
+                  "type": "number",
+                  "description": "Minimum X coordinate (left boundary)."
+                },
+                "max_x": {
+                  "type": "number",
+                  "description": "Maximum X coordinate (right boundary)."
+                }
+              }
+            },
+            "combat": {
+              "type": "object",
+              "description": "Combat system configuration for the player character.",
+              "properties": {
+                "attack_range": {
+                  "type": "number",
+                  "description": "Maximum attack range in pixels."
+                },
+                "attack_cooldown": {
+                  "type": "number",
+                  "description": "Cooldown time in frames between attacks."
+                },
+                "attack_damage_multiplier": {
+                  "type": "number",
+                  "description": "Multiplier applied to base attack damage."
+                },
+                "shooting_behavior": {
+                  "type": "string",
+                  "description": "Firing behavior (e.g., 'auto_fire_when_space_held', 'single_shot')."
+                },
+                "projectile_direction": {
+                  "type": "string",
+                  "description": "Direction projectiles travel (e.g., 'based_on_player_facing_direction', 'towards_mouse')."
+                }
+              }
+            },
+            "inventory": {
+              "type": "object",
+              "description": "Inventory system for carrying items and currency.",
+              "properties": {
+                "max_slots": {
+                  "type": "number",
+                  "description": "Maximum number of inventory slots available."
+                },
+                "gold": {
+                  "type": "number",
+                  "description": "Initial amount of gold/currency."
+                },
+                "potions": {
+                  "type": "number",
+                  "description": "Initial number of health potions."
+                }
+              }
+            }
+          }
+        },
+        "invaders": {
+          "type": "object",
+          "description": "Enemy formation configuration for Space Invaders-style games.",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Display name for the enemy formation."
+            },
+            "type": {
+              "type": "string",
+              "description": "Entity type (e.g., 'enemy_formation')."
+            },
+            "sprite": {
+              "type": "object",
+              "description": "Visual appearance configuration.",
+              "properties": {
+                "color": {"type": "string", "description": "Hex color code."},
+                "width": {"type": "number", "description": "Width in pixels."},
+                "height": {"type": "number", "description": "Height in pixels."}
+              }
+            },
+            "position": {
+              "type": "object",
+              "description": "Spawn configuration.",
+              "properties": {
+                "spawn": {
+                  "type": "string",
+                  "description": "Spawn method (e.g., 'procedural')."
+                }
+              }
+            },
+            "stats": {
+              "type": "object",
+              "description": "Formation statistics and layout.",
+              "properties": {
+                "count": {"type": "number", "description": "Total number of enemies."},
+                "rows": {"type": "number", "description": "Number of rows in formation."},
+                "columns": {"type": "number", "description": "Number of columns in formation."},
+                "start_x": {"type": "number", "description": "Starting X position in pixels."},
+                "start_y": {"type": "number", "description": "Starting Y position in pixels."},
+                "spacing_x": {"type": "number", "description": "Horizontal spacing between enemies."},
+                "spacing_y": {"type": "number", "description": "Vertical spacing between enemies."}
+              }
+            },
+            "movement": {
+              "type": "object",
+              "description": "Formation movement behavior.",
+              "properties": {
+                "horizontal_speed": {"type": "number", "description": "Pixels moved per step horizontally."},
+                "descent_amount": {"type": "number", "description": "Pixels moved down when hitting edge."},
+                "move_frequency": {"type": "number", "description": "Frames between movement steps."}
+              }
+            },
+            "shooting": {
+              "type": "object",
+              "description": "Enemy shooting behavior.",
+              "properties": {
+                "frequency": {"type": "number", "description": "Frames between potential shots."},
+                "probability": {"type": "number", "description": "Probability of shooting (0.0 to 1.0)."}
+              }
+            }
+          }
+        },
+        "bullets": {
+          "type": "object",
+          "description": "Bullet/projectile configurations for player and enemies.",
+          "properties": {
+            "player_bullet": {
+              "type": "object",
+              "description": "Player projectile configuration.",
+              "properties": {
+                "size": {
+                  "type": "object",
+                  "description": "Bullet dimensions.",
+                  "properties": {
+                    "width": {"type": "number", "description": "Width in pixels."},
+                    "height": {"type": "number", "description": "Height in pixels."}
+                  }
+                },
+                "color": {"type": "string", "description": "Hex color code."},
+                "speed": {"type": "number", "description": "Movement speed in pixels per frame."}
+              }
+            },
+            "enemy_bullet": {
+              "type": "object",
+              "description": "Enemy projectile configuration.",
+              "properties": {
+                "size": {
+                  "type": "object",
+                  "description": "Bullet dimensions.",
+                  "properties": {
+                    "width": {"type": "number", "description": "Width in pixels."},
+                    "height": {"type": "number", "description": "Height in pixels."}
+                  }
+                },
+                "color": {"type": "string", "description": "Hex color code."},
+                "speed": {"type": "number", "description": "Movement speed in pixels per frame."}
+              }
+            }
+          }
         },
         "enemies": {
-          "oneOf": [
-            {
-              "$ref": "#/definitions/enemy_list"
+          "type": "object",
+          "description": "Enemy configuration for RPG-style games with multiple enemy types.",
+          "properties": {
+            "list": {
+              "type": "array",
+              "description": "Array of enemy type definitions.",
+              "items": {
+                "type": "object",
+                "description": "Individual enemy type configuration.",
+                "properties": {
+                  "name": {"type": "string", "description": "Enemy type name (e.g., 'Acid Slime', 'Deadly Skeleton')."},
+                  "type": {"type": "string", "description": "Enemy category (e.g., 'slimes', 'skeletons', 'orcs')."},
+                  "sprite_sheet": {"type": "string", "description": "ID of sprite sheet asset to use."},
+                  "sprite_sheet_spec": {
+                    "type": "object",
+                    "description": "Sprite sheet position and scaling information.",
+                    "properties": {
+                      "sprite_positions": {
+                        "type": "object",
+                        "description": "Directional sprite positions in the sheet.",
+                        "properties": {
+                          "right": {"type": "object", "properties": {"row": {"type": "number"}, "col": {"type": "number"}}},
+                          "down": {"type": "object", "properties": {"row": {"type": "number"}, "col": {"type": "number"}}},
+                          "up": {"type": "object", "properties": {"row": {"type": "number"}, "col": {"type": "number"}}},
+                          "left": {"type": "object", "properties": {"row": {"type": "number"}, "col": {"type": "number"}}}
+                        }
+                      },
+                      "size": {
+                        "type": "object",
+                        "description": "Size of each sprite.",
+                        "properties": {
+                          "width": {"type": "number"},
+                          "height": {"type": "number"}
+                        }
+                      },
+                      "scale": {"type": "number", "description": "Scaling multiplier."}
+                    }
+                  },
+                  "collision_size": {
+                    "type": "object",
+                    "description": "Collision detection size.",
+                    "properties": {
+                      "radius": {"type": "number", "description": "Collision radius in pixels."}
+                    }
+                  },
+                  "color": {"type": "string", "description": "Fallback color if sprite not loaded."},
+                  "health": {"type": "number", "description": "Health points."},
+                  "attack": {"type": "number", "description": "Attack power."},
+                  "defense": {"type": "number", "description": "Defense stat."},
+                  "speed": {"type": "number", "description": "Movement speed."},
+                  "experience_value": {"type": "number", "description": "XP granted when defeated."},
+                  "gold_drop": {
+                    "type": "object",
+                    "description": "Gold drop range on defeat.",
+                    "properties": {
+                      "min": {"type": "number", "description": "Minimum gold dropped."},
+                      "max": {"type": "number", "description": "Maximum gold dropped."}
+                    }
+                  },
+                  "spawn_chance": {"type": "number", "description": "Probability of spawning (0.0 to 1.0)."},
+                  "ai_behavior": {
+                    "type": "object",
+                    "description": "AI behavior configuration.",
+                    "properties": {
+                      "detection_range": {"type": "number", "description": "Range in pixels to detect player."},
+                      "chase_player": {"type": "boolean", "description": "Whether to chase the player."},
+                      "attack_range": {"type": "number", "description": "Range in pixels to attack."},
+                      "attack_cooldown": {"type": "number", "description": "Frames between attacks."}
+                    }
+                  }
+                }
+              }
             },
-            {
-              "$ref": "#/definitions/enemy_formation"
+            "spawn_rules": {
+              "type": "object",
+              "description": "Rules for spawning enemies in the game world.",
+              "properties": {
+                "enemies_per_room": {
+                  "type": "object",
+                  "description": "Number of enemies per room range.",
+                  "properties": {
+                    "min": {"type": "number"},
+                    "max": {"type": "number"}
+                  }
+                },
+                "scale_with_level": {"type": "boolean", "description": "Whether enemy stats scale with level."},
+                "exclude_player_room": {"type": "boolean", "description": "Don't spawn enemies in player's starting room."},
+                "exclude_exit_room": {"type": "boolean", "description": "Don't spawn enemies in exit room."}
+              }
             }
-          ]
+          }
         },
         "items": {
-          "$ref": "#/definitions/item_list"
+          "type": "object",
+          "description": "Collectible items configuration.",
+          "properties": {
+            "list": {
+              "type": "array",
+              "description": "Array of item type definitions.",
+              "items": {
+                "type": "object",
+                "description": "Individual item configuration.",
+                "properties": {
+                  "name": {"type": "string", "description": "Item name (e.g., 'health_potion', 'chest')."},
+                  "sprite_sheet": {"type": "string", "description": "Sprite sheet ID to use."},
+                  "sprite_sheet_spec": {
+                    "type": "object",
+                    "description": "Sprite configuration for the item.",
+                    "properties": {
+                      "sprite_positions": {
+                        "type": "object",
+                        "description": "Sprite positions for different states.",
+                        "properties": {
+                          "full": {"type": "object", "properties": {"row": {"type": "number"}, "col": {"type": "number"}}},
+                          "open": {"type": "object", "properties": {"row": {"type": "number"}, "col": {"type": "number"}}},
+                          "close": {"type": "object", "properties": {"row": {"type": "number"}, "col": {"type": "number"}}}
+                        }
+                      },
+                      "size": {"type": "object", "properties": {"width": {"type": "number"}, "height": {"type": "number"}}},
+                      "scale": {"type": "number"}
+                    }
+                  },
+                  "collision_size": {"type": "object", "properties": {"radius": {"type": "number"}}},
+                  "effect": {"type": "string", "description": "Effect when used (e.g., 'restore_50_health')."},
+                  "spawn_chance": {"type": "number", "description": "Spawn probability (0.0 to 1.0)."},
+                  "contains": {
+                    "type": "object",
+                    "description": "Contents for container items like chests.",
+                    "properties": {
+                      "gold": {"type": "object", "properties": {"min": {"type": "number"}, "max": {"type": "number"}}},
+                      "potion_chance": {"type": "number"}
+                    }
+                  },
+                  "spawn_per_level": {
+                    "type": "object",
+                    "description": "Number of this item per level.",
+                    "properties": {
+                      "min": {"type": "number"},
+                      "max": {"type": "number"}
+                    }
+                  }
+                }
+              }
+            }
+          }
         },
         "projectiles": {
-          "$ref": "#/definitions/projectile_config"
-        },
-        "npcs": {
-          "$ref": "#/definitions/npc_list"
-        },
-        "obstacles": {
-          "$ref": "#/definitions/obstacle_list"
+          "type": "object",
+          "description": "Projectile configurations for combat systems.",
+          "properties": {
+            "player_attack": {
+              "type": "object",
+              "description": "Player projectile configuration.",
+              "properties": {
+                "shape": {"type": "string", "description": "Shape (e.g., 'circle', 'rectangle')."},
+                "size": {"type": "object", "properties": {"radius": {"type": "number"}}},
+                "color": {"type": "string", "description": "Hex color code."},
+                "speed": {"type": "number", "description": "Pixels per frame."},
+                "lifetime": {"type": "number", "description": "Lifetime in frames before despawn."},
+                "damage_base": {"type": "number", "description": "Base damage value."}
+              }
+            },
+            "enemy_attack": {
+              "type": "object",
+              "description": "Enemy projectile configuration.",
+              "properties": {
+                "shape": {"type": "string"},
+                "size": {"type": "object", "properties": {"radius": {"type": "number"}}},
+                "color": {"type": "string"},
+                "speed": {"type": "number"},
+                "lifetime": {"type": "number"}
+              }
+            }
+          }
         }
-      },
-      "additionalProperties": true
+      }
     },
     "resources": {
       "type": "object",
-      "description": "Game resources and state management",
+      "description": "Game resources including initial state values, audio files, and input configuration.",
       "properties": {
         "game_state": {
-          "$ref": "#/definitions/game_state_resources"
+          "type": "object",
+          "description": "Initial game state values and scoring configuration.",
+          "properties": {
+            "initial_lives": {"type": "number", "description": "Starting number of lives."},
+            "initial_level": {"type": "number", "description": "Starting level number."},
+            "initial_score": {"type": "number", "description": "Starting score."},
+            "initial_floor": {"type": "number", "description": "Starting dungeon floor."},
+            "initial_gold": {"type": "number", "description": "Starting gold amount."},
+            "initial_potions": {"type": "number", "description": "Starting number of potions."},
+            "max_floor": {"type": "number", "description": "Maximum number of floors/levels."},
+            "points_per_enemy": {"type": "number", "description": "Points awarded per enemy killed."}
+          }
         },
         "game_states": {
-          "$ref": "#/definitions/game_states_definition"
+          "type": "object",
+          "description": "Available game states and default state.",
+          "properties": {
+            "available": {
+              "type": "array",
+              "description": "List of all valid game state names.",
+              "items": {
+                "type": "string",
+                "description": "Game state name (e.g., 'menu', 'playing', 'gameOver')."
+              }
+            },
+            "default": {
+              "type": "string",
+              "description": "Default game state to start in (typically 'menu')."
+            }
+          }
         },
         "input_handling": {
-          "$ref": "#/definitions/input_handling"
+          "type": "object",
+          "description": "Input event configuration.",
+          "properties": {
+            "keydown_events": {"type": "boolean", "description": "Enable keydown event listeners."},
+            "keyup_events": {"type": "boolean", "description": "Enable keyup event listeners."},
+            "supported_keys": {
+              "type": "array",
+              "description": "List of keyboard keys the game responds to.",
+              "items": {
+                "type": "string",
+                "description": "Key code (e.g., 'KeyW', 'Space', 'ArrowLeft')."
+              }
+            }
+          }
         },
-        "audio": {
-          "$ref": "#/definitions/audio_config"
+        "game_audio": {
+          "type": "object",
+          "description": "Audio file paths for sound effects and music.",
+          "additionalProperties": {
+            "type": "string",
+            "description": "Path to audio file."
+          }
         }
       }
     },
     "game_states": {
       "type": "object",
-      "description": "Detailed configuration for each game state",
-      "patternProperties": {
-        "^[a-zA-Z_]+$": {
-          "$ref": "#/definitions/game_state_config"
+      "description": "Configuration for each game state screen including menu, gameplay, and game over screens.",
+      "additionalProperties": {
+        "type": "object",
+        "description": "Individual game state configuration.",
+        "properties": {
+          "duration": {
+            "type": "number",
+            "description": "Duration in frames to display this state before auto-transitioning."
+          },
+          "canvas_rendering": {
+            "type": "object",
+            "description": "Visual rendering configuration for this state.",
+            "properties": {
+              "background": {
+                "type": "string",
+                "description": "Background color (hex code) or special value like 'transparent_overlay'."
+              },
+              "ui_elements": {
+                "type": "array",
+                "description": "UI elements to render on screen.",
+                "items": {
+                  "type": "object",
+                  "description": "Individual UI element (typically text).",
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "description": "Text to display. Can include variables like {score}, {level}, {lives}."
+                    },
+                    "font": {
+                      "type": "string",
+                      "description": "CSS font specification (e.g., 'bold 60px Arial')."
+                    },
+                    "color": {
+                      "type": "string",
+                      "description": "Hex color code for text."
+                    },
+                    "position": {
+                      "type": "object",
+                      "description": "Position on canvas.",
+                      "properties": {
+                        "x": {
+                          "description": "X position in pixels or 'center' for centering.",
+                          "oneOf": [
+                            {"type": "number"},
+                            {"type": "string"}
+                          ]
+                        },
+                        "y": {
+                          "type": "number",
+                          "description": "Y position in pixels."
+                        },
+                        "align": {
+                          "type": "string",
+                          "enum": ["left", "right", "center"],
+                          "description": "Text alignment."
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "dungeon_floor_color": {
+                "type": "string",
+                "description": "Color for dungeon floor tiles in playing state."
+              },
+              "dungeon_wall_color": {
+                "type": "string",
+                "description": "Color for dungeon wall tiles in playing state."
+              }
+            }
+          },
+          "input_transitions": {
+            "type": "object",
+            "description": "Key bindings for transitioning to other states.",
+            "properties": {
+              "space_key": {"type": "string", "description": "State to transition to when space is pressed."},
+              "r_key": {"type": "string", "description": "State to transition to when R is pressed."},
+              "h_key": {"type": "string", "description": "State to transition to when H is pressed."},
+              "escape_key": {"type": "string", "description": "State to transition to when ESC is pressed."}
+            }
+          },
+          "controls": {
+            "type": "object",
+            "description": "Active controls during this state (typically for 'playing' state).",
+            "properties": {
+              "movement": {
+                "type": "array",
+                "description": "Keys for player movement.",
+                "items": {"type": "string"}
+              },
+              "attack": {
+                "type": "array",
+                "description": "Keys for attacking.",
+                "items": {"type": "string"}
+              },
+              "shooting": {
+                "type": "array",
+                "description": "Keys for shooting.",
+                "items": {"type": "string"}
+              },
+              "use_potion": {
+                "type": "array",
+                "description": "Keys for using potions.",
+                "items": {"type": "string"}
+              },
+              "interact": {
+                "type": "array",
+                "description": "Keys for interacting with objects.",
+                "items": {"type": "string"}
+              }
+            }
+          },
+          "collision_systems": {
+            "type": "array",
+            "description": "Active collision detection systems for this state.",
+            "items": {
+              "type": "string",
+              "description": "Collision system name (e.g., 'player_vs_walls', 'bullets_vs_enemies')."
+            }
+          },
+          "auto_transition": {
+            "type": "object",
+            "description": "Automatic state transition after a delay.",
+            "properties": {
+              "target_state": {"type": "string", "description": "State to transition to."},
+              "delay": {"type": "number", "description": "Delay in frames before transitioning."}
+            }
+          },
+          "achievement_messages": {
+            "type": "object",
+            "description": "Conditional messages based on player achievement levels.",
+            "properties": {
+              "level_10_plus": {"type": "string", "description": "Message for reaching level 10+."},
+              "level_5_plus": {"type": "string", "description": "Message for reaching level 5+."},
+              "default": {"type": "string", "description": "Default message."}
+            }
+          }
         }
       }
     },
     "gameplay_systems": {
       "type": "object",
-      "description": "Core gameplay mechanics and systems",
+      "description": "Core gameplay mechanics and systems including movement, combat, AI, and progression.",
       "properties": {
         "player_movement": {
-          "$ref": "#/definitions/movement_system"
+          "type": "object",
+          "description": "Player movement system configuration.",
+          "properties": {
+            "keys": {
+              "type": "object",
+              "description": "Key bindings for directional movement.",
+              "properties": {
+                "up": {"type": "array", "items": {"type": "string"}, "description": "Keys for moving up."},
+                "down": {"type": "array", "items": {"type": "string"}, "description": "Keys for moving down."},
+                "left": {"type": "array", "items": {"type": "string"}, "description": "Keys for moving left."},
+                "right": {"type": "array", "items": {"type": "string"}, "description": "Keys for moving right."}
+              }
+            },
+            "speed": {
+              "type": "number",
+              "description": "Movement speed in pixels per frame."
+            },
+            "movement_type": {
+              "type": "string",
+              "description": "Movement style: 'continuous' (smooth) or 'grid_aligned' (grid-based)."
+            },
+            "collision": {
+              "type": "string",
+              "description": "Collision detection type (e.g., 'wall_detection')."
+            },
+            "diagonal_movement": {
+              "type": "boolean",
+              "description": "Whether diagonal movement is allowed."
+            },
+            "boundaries": {
+              "type": "object",
+              "description": "Movement boundaries.",
+              "properties": {
+                "left": {"description": "Left boundary."},
+                "right": {"type": "string", "description": "Right boundary (can be formula)."}
+              }
+            }
+          }
+        },
+        "player_shooting": {
+          "type": "object",
+          "description": "Player shooting mechanics.",
+          "properties": {
+            "key": {"type": "string", "description": "Key to shoot."},
+            "bullet_spawn_offset": {
+              "type": "object",
+              "description": "Bullet spawn position relative to player.",
+              "properties": {
+                "x": {"type": "string", "description": "X offset formula."},
+                "y": {"type": "number", "description": "Y offset in pixels."}
+              }
+            },
+            "cooldown": {"type": "string", "description": "Cooldown between shots or 'none'."}
+          }
         },
         "combat_system": {
-          "$ref": "#/definitions/combat_system"
+          "type": "object",
+          "description": "Combat mechanics for RPG-style games.",
+          "properties": {
+            "player_attack": {
+              "type": "object",
+              "description": "Player attack configuration.",
+              "properties": {
+                "type": {"type": "string", "description": "Attack type (e.g., 'ranged_projectile')."},
+                "trigger": {"type": "string", "description": "How attack is triggered."},
+                "direction": {"type": "string", "description": "Attack direction logic."},
+                "cooldown": {"type": "number", "description": "Cooldown in frames."},
+                "damage_calculation": {"type": "string", "description": "Damage formula."},
+                "knockback": {"type": "number", "description": "Knockback distance in pixels."}
+              }
+            },
+            "enemy_attack": {
+              "type": "object",
+              "description": "Enemy attack configuration.",
+              "properties": {
+                "type": {"type": "string", "description": "Attack types."},
+                "trigger": {"type": "string", "description": "Attack trigger logic."},
+                "melee_range": {"type": "number", "description": "Melee range in pixels."},
+                "ranged_range": {"type": "number", "description": "Ranged range in pixels."},
+                "cooldown": {"type": "number", "description": "Cooldown in frames."}
+              }
+            },
+            "damage_formula": {
+              "type": "string",
+              "description": "Global damage calculation formula."
+            }
+          }
+        },
+        "enemy_movement": {
+          "type": "object",
+          "description": "Enemy movement behavior for formation-based games.",
+          "properties": {
+            "pattern": {"type": "string", "description": "Movement pattern (e.g., 'swarm')."},
+            "timer_based": {"type": "boolean", "description": "Use timer for movement."},
+            "move_interval": {"type": "number", "description": "Frames between moves."},
+            "horizontal_distance": {"type": "number", "description": "Pixels per horizontal move."},
+            "edge_behavior": {"type": "string", "description": "Behavior at screen edges."},
+            "descent_distance": {"type": "number", "description": "Pixels to descend at edges."}
+          }
+        },
+        "enemy_shooting": {
+          "type": "object",
+          "description": "Enemy shooting mechanics.",
+          "properties": {
+            "timer_based": {"type": "boolean"},
+            "shoot_interval": {"type": "number", "description": "Frames between shots."},
+            "probability": {"type": "number", "description": "Shot probability (0.0-1.0)."},
+            "random_shooter": {"type": "boolean", "description": "Pick random enemy to shoot."}
+          }
         },
         "experience_system": {
-          "$ref": "#/definitions/experience_system"
+          "type": "object",
+          "description": "Experience and leveling system for RPG games.",
+          "properties": {
+            "level_up_formula": {"type": "string", "description": "Formula for XP required to level up."},
+            "stat_gains_per_level": {
+              "type": "object",
+              "description": "Stat increases per level.",
+              "properties": {
+                "max_health": {"type": "number"},
+                "attack": {"type": "number"},
+                "defense": {"type": "number"}
+              }
+            },
+            "health_restore_on_level": {"type": "string", "description": "Health restoration on level up."}
+          }
         },
         "loot_system": {
-          "$ref": "#/definitions/loot_system"
+          "type": "object",
+          "description": "Item and currency drop system.",
+          "properties": {
+            "gold_drops": {"type": "boolean", "description": "Enable gold drops."},
+            "item_drops": {"type": "boolean", "description": "Enable item drops."},
+            "chest_contents": {"type": "string", "description": "Chest loot generation method."}
+          }
         },
         "progression_system": {
-          "$ref": "#/definitions/progression_system"
+          "type": "object",
+          "description": "Level/floor progression configuration.",
+          "properties": {
+            "floors": {"type": "number", "description": "Total number of floors."},
+            "difficulty_scaling": {
+              "type": "object",
+              "description": "Difficulty scaling per floor.",
+              "properties": {
+                "enemy_health_multiplier": {"type": "number"},
+                "enemy_attack_multiplier": {"type": "number"},
+                "enemy_count_increase": {"type": "number"}
+              }
+            }
+          }
         },
-        "physics_system": {
-          "$ref": "#/definitions/physics_system"
+        "collision_detection": {
+          "type": "object",
+          "description": "Collision detection systems configuration.",
+          "properties": {
+            "systems": {
+              "type": "array",
+              "description": "List of collision detection systems.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {"type": "string", "description": "System name."},
+                  "check": {"type": "string", "description": "Detection method."},
+                  "result": {"type": "string", "description": "Action on collision."}
+                }
+              }
+            }
+          }
         },
-        "scoring_system": {
-          "$ref": "#/definitions/scoring_system"
+        "text_rendering": {
+          "type": "object",
+          "description": "Text rendering configuration.",
+          "properties": {
+            "context": {"type": "string", "description": "Rendering context type."},
+            "alignment_support": {
+              "type": "array",
+              "description": "Supported text alignments.",
+              "items": {"type": "string"}
+            }
+          }
         }
-      },
-      "additionalProperties": true
+      }
+    },
+    "rendering": {
+      "type": "object",
+      "description": "Rendering system configuration including shapes, colors, and drawing methods.",
+      "properties": {
+        "method": {
+          "type": "string",
+          "description": "Rendering method/context (e.g., 'canvas_2d')."
+        },
+        "shapes": {
+          "type": "object",
+          "description": "Shape rendering definitions for different entity types.",
+          "properties": {
+            "player": {
+              "type": "object",
+              "description": "Player visual rendering.",
+              "properties": {
+                "type": {"type": "string", "description": "Shape type (e.g., 'triangle', 'circle')."},
+                "color": {"type": "string", "description": "Color hex code."},
+                "points": {
+                  "type": "array",
+                  "description": "Points for polygon shapes.",
+                  "items": {"type": "string"}
+                }
+              }
+            },
+            "enemies": {
+              "type": "object",
+              "description": "Enemy visual rendering.",
+              "properties": {
+                "type": {"type": "string"},
+                "color": {"type": "string"}
+              }
+            },
+            "bullets": {
+              "type": "object",
+              "description": "Bullet visual rendering.",
+              "properties": {
+                "type": {"type": "string"},
+                "player_color": {"type": "string"},
+                "enemy_color": {"type": "string"}
+              }
+            }
+          }
+        },
+        "text_rendering": {
+          "type": "object",
+          "description": "Text rendering configuration.",
+          "properties": {
+            "context": {"type": "string"},
+            "alignment_support": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          }
+        }
+      }
     },
     "level_progression": {
-      "$ref": "#/definitions/level_progression"
+      "type": "object",
+      "description": "Level advancement and progression configuration.",
+      "properties": {
+        "trigger": {
+          "type": "string",
+          "description": "Event that triggers level progression (e.g., 'all_enemies_destroyed', 'reach_exit_stairs')."
+        },
+        "requirement": {
+          "type": "string",
+          "description": "Requirement before progression is available."
+        },
+        "action": {
+          "type": "string",
+          "description": "Action to perform on level progression."
+        },
+        "difficulty_increase": {
+          "type": "boolean",
+          "description": "Whether to increase difficulty on progression."
+        },
+        "enemy_speed_increase": {
+          "type": "number",
+          "description": "Amount to increase enemy speed per level."
+        },
+        "move_frequency_decrease": {
+          "type": "number",
+          "description": "Amount to decrease move interval per level (faster movement)."
+        },
+        "shoot_frequency_decrease": {
+          "type": "number",
+          "description": "Amount to decrease shoot interval per level (faster shooting)."
+        },
+        "shoot_probability_increase": {
+          "type": "number",
+          "description": "Amount to increase shoot probability per level."
+        },
+        "detection_behavior": {
+          "type": "object",
+          "description": "Exit detection behavior configuration.",
+          "properties": {
+            "radius": {"type": "number", "description": "Detection radius in pixels."},
+            "check_frequency": {"type": "string", "description": "How often to check."},
+            "priority": {"type": "string", "description": "Priority level."},
+            "rule": {"type": "string", "description": "Special detection rules."}
+          }
+        }
+      }
+    },
+    "gameplay_conditions": {
+      "type": "object",
+      "description": "Game event conditions for level progression and game over.",
+      "properties": {
+        "level_progression": {
+          "type": "object",
+          "description": "Level progression configuration.",
+          "properties": {
+            "trigger": {"type": "string"},
+            "action": {"type": "string"},
+            "enemy_speed_increase": {"type": "number"},
+            "move_frequency_decrease": {"type": "number"},
+            "shoot_frequency_decrease": {"type": "number"},
+            "shoot_probability_increase": {"type": "number"}
+          }
+        },
+        "game_over_conditions": {
+          "type": "array",
+          "description": "Conditions that trigger game over.",
+          "items": {
+            "type": "string",
+            "description": "Game over condition (e.g., 'lives <= 0', 'enemies_reach_bottom')."
+          }
+        }
+      }
     },
     "game_over_conditions": {
       "type": "array",
-      "description": "Conditions that trigger game over",
+      "description": "Conditions that trigger the game over state.",
       "items": {
-        "type": "string"
+        "type": "string",
+        "description": "Condition expression (e.g., 'player_health <= 0', 'lives <= 0')."
       }
     },
     "win_condition": {
       "type": "array",
-      "description": "Conditions required to win the game",
+      "description": "Conditions that trigger the victory/win state.",
       "items": {
-        "type": "string"
+        "type": "string",
+        "description": "Win condition expression (e.g., 'floor >= 10 AND reached_exit')."
       }
     },
     "prompt_instruction": {
-      "type": "string",
-      "description": "Detailed AI prompt instructions for game implementation"
-    }
-  },
-  "definitions": {
-    "world_config": {
-      "type": "object",
-      "description": "Configuration for game world areas (dungeons, levels, maps)",
-      "properties": {
-        "grid_size": {
-          "type": "integer",
-          "description": "Size of each grid cell in pixels"
-        },
-        "rows": {
-          "type": "integer",
-          "description": "Number of rows in the grid"
-        },
-        "columns": {
-          "type": "integer",
-          "description": "Number of columns in the grid"
-        },
-        "offset_x": {
-          "type": "integer",
-          "description": "Horizontal rendering offset"
-        },
-        "offset_y": {
-          "type": "integer",
-          "description": "Vertical rendering offset"
-        },
-        "generation_rules": {
-          "$ref": "#/definitions/generation_rules"
-        }
-      }
-    },
-    "playground_config": {
-      "type": "object",
-      "description": "Configuration for gameplay areas",
-      "properties": {
-        "grid_size": {
-          "type": "integer"
-        },
-        "rows": {
-          "type": "integer"
-        },
-        "columns": {
-          "type": "integer"
-        },
-        "offset_x": {
-          "type": "integer"
-        },
-        "offset_y": {
-          "type": "integer"
-        },
-        "generation_rules": {
-          "$ref": "#/definitions/generation_rules"
-        }
-      }
-    },
-    "generation_rules": {
-      "type": "object",
-      "description": "Rules for procedural generation",
-      "properties": {
-        "algorithm": {
-          "type": "string",
-          "description": "Generation algorithm name",
-          "examples": ["Binary Space Partition", "Cellular Automata", "Depth-First Search", "Perlin Noise", "Random Walk"]
-        },
-        "generation": {
-          "type": "string",
-          "enum": ["random", "seeded", "predefined", "procedural"]
-        },
-        "room_count": {
-          "type": "integer"
-        },
-        "room_min_size": {
-          "type": "integer"
-        },
-        "room_max_size": {
-          "type": "integer"
-        },
-        "corridor_width": {
-          "type": "integer"
-        },
-        "wall_color": {
-          "type": "string",
-          "pattern": "^#[0-9A-Fa-f]{6}$"
-        },
-        "floor_color": {
-          "type": "string",
-          "pattern": "^#[0-9A-Fa-f]{6}$"
-        },
-        "path_color": {
-          "type": "string",
-          "pattern": "^#[0-9A-Fa-f]{6}$"
-        },
-        "wall_render": {
-          "type": "string",
-          "enum": ["fillRect", "strokeRect", "sprite"]
-        },
-        "door_count": {
-          "type": "integer"
-        },
-        "door_color": {
-          "type": "string",
-          "pattern": "^#[0-9A-Fa-f]{6}$"
-        }
-      },
-      "additionalProperties": true
-    },
-    "player_entity": {
-      "type": "object",
-      "description": "Player character configuration",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "shape": {
-          "type": "string",
-          "enum": ["circle", "rectangle", "triangle", "sprite", "polygon"]
-        },
-        "sprite_sheet_spec": {
-          "$ref": "#/definitions/sprite_sheet_spec"
-        },
-        "size": {
-          "$ref": "#/definitions/size_config"
-        },
-        "color": {
-          "type": "string",
-          "pattern": "^#[0-9A-Fa-f]{6}$"
-        },
-        "spawn_position": {
-          "oneOf": [
-            {
-              "$ref": "#/definitions/position_config"
-            },
-            {
-              "type": "object",
-              "description": "Rule-based spawn position",
-              "properties": {
-                "rule": {
-                  "type": "string",
-                  "description": "Spawn position rule",
-                  "examples": ["first_room_center", "last_room_center", "random_room", "center", "random"]
-                }
-              },
-              "required": ["rule"],
-              "additionalProperties": false
-            }
-          ]
-        },
-        "speed": {
-          "type": "number",
-          "description": "Movement speed in pixels per frame"
-        },
-        "stats": {
-          "$ref": "#/definitions/character_stats"
-        },
-        "combat": {
-          "$ref": "#/definitions/entity_combat_config"
-        },
-        "inventory": {
-          "$ref": "#/definitions/inventory_config"
-        },
-        "animation": {
-          "$ref": "#/definitions/animation_config"
-        },
-        "bounds": {
-          "$ref": "#/definitions/bounds_config"
-        }
-      }
-    },
-    "enemy_list": {
-      "type": "object",
-      "description": "List-based enemy configuration",
-      "properties": {
-        "list": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/enemy_definition"
-          }
-        },
-        "spawn_rules": {
-          "$ref": "#/definitions/spawn_rules"
-        }
-      }
-    },
-    "enemy_formation": {
-      "type": "object",
-      "description": "Formation-based enemy configuration (e.g., Space Invaders)",
-      "properties": {
-        "count": {
-          "type": "integer"
-        },
-        "formation": {
-          "$ref": "#/definitions/formation_config"
-        },
-        "size": {
-          "$ref": "#/definitions/size_config"
-        },
-        "color": {
-          "type": "string",
-          "pattern": "^#[0-9A-Fa-f]{6}$"
-        },
-        "movement": {
-          "$ref": "#/definitions/movement_config"
-        },
-        "shooting": {
-          "$ref": "#/definitions/shooting_config"
-        }
-      }
-    },
-    "enemy_definition": {
-      "type": "object",
-      "description": "Individual enemy type definition",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string"
-        },
-        "sprite_sheet_spec": {
-          "$ref": "#/definitions/sprite_sheet_spec"
-        },
-        "scale": {
-          "type": "number"
-        },
-        "size": {
-          "$ref": "#/definitions/size_config"
-        },
-        "color": {
-          "type": "string",
-          "pattern": "^#[0-9A-Fa-f]{6}$"
-        },
-        "health": {
-          "type": "number"
-        },
-        "attack": {
-          "type": "number"
-        },
-        "defense": {
-          "type": "number"
-        },
-        "speed": {
-          "type": "number"
-        },
-        "experience_value": {
-          "type": "integer"
-        },
-        "gold_drop": {
-          "$ref": "#/definitions/range_config"
-        },
-        "spawn_chance": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1
-        },
-        "ai_behavior": {
-          "$ref": "#/definitions/ai_behavior"
-        }
-      }
-    },
-    "item_list": {
-      "type": "object",
-      "description": "List of items in the game",
-      "properties": {
-        "list": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/item_definition"
-          }
-        }
-      }
-    },
-    "item_definition": {
-      "type": "object",
-      "description": "Individual item configuration",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string"
-        },
-        "color": {
-          "type": "string",
-          "pattern": "^#[0-9A-Fa-f]{6}$"
-        },
-        "size": {
-          "$ref": "#/definitions/size_config"
-        },
-        "effect": {
-          "type": "string"
-        },
-        "spawn_chance": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1
-        },
-        "spawn_per_level": {
-          "oneOf": [
-            {
-              "type": "integer"
-            },
-            {
-              "$ref": "#/definitions/range_config"
-            }
-          ]
-        },
-        "contains": {
-          "type": "object",
-          "description": "Contents for container items",
-          "additionalProperties": true
-        }
-      }
-    },
-    "projectile_config": {
-      "type": "object",
-      "description": "Projectile definitions",
-      "patternProperties": {
-        "^[a-z_]+$": {
-          "type": "object",
-          "properties": {
-            "shape": {
-              "type": "string",
-              "enum": ["circle", "rectangle", "sprite"]
-            },
-            "size": {
-              "$ref": "#/definitions/size_config"
-            },
-            "color": {
-              "type": "string",
-              "pattern": "^#[0-9A-Fa-f]{6}$"
-            },
-            "speed": {
-              "type": "number"
-            },
-            "lifetime": {
-              "type": "integer",
-              "description": "Lifetime in frames"
-            },
-            "damage_base": {
-              "type": "number"
-            }
-          }
-        }
-      }
-    },
-    "npc_list": {
-      "type": "array",
-      "description": "Non-player characters",
-      "items": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "type": {
-            "type": "string"
-          },
-          "position": {
-            "$ref": "#/definitions/position_config"
-          },
-          "dialogue": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      }
-    },
-    "obstacle_list": {
-      "type": "array",
-      "description": "Environmental obstacles",
-      "items": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string"
-          },
-          "position": {
-            "$ref": "#/definitions/position_config"
-          },
-          "size": {
-            "$ref": "#/definitions/size_config"
-          },
-          "destructible": {
-            "type": "boolean"
-          }
-        }
-      }
-    },
-    "sprite_sheet_spec": {
-      "type": "object",
-      "description": "Sprite sheet specification",
-      "properties": {
-        "sprite_sheet": {
-          "type": "string",
-          "description": "Reference to asset ID"
-        },
-        "sprite_positions": {
-          "type": "object",
-          "description": "Sprite positions for different directions/states",
-          "patternProperties": {
-            "^[a-z_]+$": {
-              "$ref": "#/definitions/sprite_position"
-            }
-          }
-        },
-        "size": {
-          "$ref": "#/definitions/size_config"
-        },
-        "scale": {
-          "type": "number"
-        }
-      }
-    },
-    "sprite_position": {
-      "type": "object",
-      "properties": {
-        "row": {
-          "type": "integer"
-        },
-        "col": {
-          "type": "integer"
-        }
-      },
-      "required": ["row", "col"]
-    },
-    "size_config": {
-      "type": "object",
-      "description": "Size configuration (radius for circles, width/height for rectangles)",
+      "description": "Detailed instructions for AI to follow when implementing the game. Includes requirements, structure, implementation details, and fixes. Can be a string or an object with structured sections.",
       "oneOf": [
         {
-          "properties": {
-            "radius": {
-              "type": "number"
-            }
-          },
-          "required": ["radius"],
-          "additionalProperties": false
+          "type": "string",
+          "description": "Simple string format for prompt instructions."
         },
         {
-          "properties": {
-            "width": {
-              "type": "number"
-            },
-            "height": {
-              "type": "number"
-            }
-          },
-          "required": ["width", "height"],
-          "additionalProperties": false
+          "type": "object",
+          "description": "Structured format with separate sections. Each section can be a string, an array of strings, or null.",
+          "additionalProperties": {
+            "oneOf": [
+              {"type": "string"},
+              {"type": "array", "items": {"type": "string"}},
+              {"type": "null"}
+            ]
+          }
         }
       ]
-    },
-    "position_config": {
-      "type": "object",
-      "description": "Position in pixels or grid coordinates",
-      "oneOf": [
-        {
-          "properties": {
-            "x": {
-              "type": "number"
-            },
-            "y": {
-              "type": "number"
-            }
-          },
-          "required": ["x", "y"]
-        },
-        {
-          "properties": {
-            "grid_x": {
-              "type": "integer"
-            },
-            "grid_y": {
-              "type": "integer"
-            }
-          },
-          "required": ["grid_x", "grid_y"]
-        }
-      ]
-    },
-    "bounds_config": {
-      "type": "object",
-      "description": "Movement boundaries",
-      "properties": {
-        "min_x": {
-          "type": "number"
-        },
-        "max_x": {
-          "type": "number"
-        },
-        "min_y": {
-          "type": "number"
-        },
-        "max_y": {
-          "type": "number"
-        }
-      }
-    },
-    "character_stats": {
-      "type": "object",
-      "description": "Character statistics",
-      "properties": {
-        "max_health": {
-          "type": "number"
-        },
-        "health": {
-          "type": "number"
-        },
-        "attack": {
-          "type": "number"
-        },
-        "defense": {
-          "type": "number"
-        },
-        "level": {
-          "type": "integer"
-        },
-        "experience": {
-          "type": "integer"
-        },
-        "experience_to_next_level": {
-          "type": "integer"
-        }
-      },
-      "additionalProperties": true
-    },
-    "entity_combat_config": {
-      "type": "object",
-      "description": "Combat configuration for entities",
-      "properties": {
-        "attack_range": {
-          "type": "number"
-        },
-        "attack_cooldown": {
-          "type": "integer"
-        },
-        "attack_damage_multiplier": {
-          "type": "number"
-        }
-      }
-    },
-    "inventory_config": {
-      "type": "object",
-      "description": "Inventory system configuration",
-      "properties": {
-        "max_slots": {
-          "type": "integer"
-        },
-        "gold": {
-          "type": "integer"
-        },
-        "potions": {
-          "type": "integer"
-        },
-        "keys": {
-          "type": "integer"
-        }
-      },
-      "additionalProperties": true
-    },
-    "animation_config": {
-      "type": "object",
-      "description": "Animation properties",
-      "properties": {
-        "mouth_open_angle": {
-          "type": "number"
-        },
-        "animation_speed": {
-          "type": "integer"
-        },
-        "frame_count": {
-          "type": "integer"
-        }
-      },
-      "additionalProperties": true
-    },
-    "spawn_rules": {
-      "type": "object",
-      "description": "Rules for spawning entities",
-      "properties": {
-        "enemies_per_room": {
-          "$ref": "#/definitions/range_config"
-        },
-        "scale_with_level": {
-          "type": "boolean"
-        },
-        "exclude_player_room": {
-          "type": "boolean"
-        },
-        "exclude_exit_room": {
-          "type": "boolean"
-        }
-      }
-    },
-    "ai_behavior": {
-      "type": "object",
-      "description": "AI behavior configuration",
-      "properties": {
-        "detection_range": {
-          "type": "number"
-        },
-        "chase_player": {
-          "type": "boolean"
-        },
-        "attack_range": {
-          "type": "number"
-        },
-        "attack_cooldown": {
-          "type": "integer"
-        },
-        "patrol": {
-          "type": "boolean"
-        },
-        "flee_on_low_health": {
-          "type": "boolean"
-        }
-      }
-    },
-    "formation_config": {
-      "type": "object",
-      "description": "Formation layout for enemy groups",
-      "properties": {
-        "rows": {
-          "type": "integer"
-        },
-        "columns": {
-          "type": "integer"
-        },
-        "start_x": {
-          "type": "number"
-        },
-        "start_y": {
-          "type": "number"
-        },
-        "spacing_x": {
-          "type": "number"
-        },
-        "spacing_y": {
-          "type": "number"
-        }
-      }
-    },
-    "movement_config": {
-      "type": "object",
-      "description": "Movement behavior configuration",
-      "properties": {
-        "horizontal_speed": {
-          "type": "number"
-        },
-        "vertical_speed": {
-          "type": "number"
-        },
-        "descent_amount": {
-          "type": "number"
-        },
-        "move_frequency": {
-          "type": "integer"
-        }
-      }
-    },
-    "shooting_config": {
-      "type": "object",
-      "description": "Shooting behavior configuration",
-      "properties": {
-        "frequency": {
-          "type": "integer"
-        },
-        "probability": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1
-        }
-      }
-    },
-    "range_config": {
-      "type": "object",
-      "description": "Min-max range specification",
-      "properties": {
-        "min": {
-          "type": "number"
-        },
-        "max": {
-          "type": "number"
-        }
-      },
-      "required": ["min", "max"]
-    },
-    "game_state_resources": {
-      "type": "object",
-      "description": "Initial game state values",
-      "properties": {
-        "initial_lives": {
-          "type": "integer"
-        },
-        "initial_level": {
-          "type": "integer"
-        },
-        "initial_score": {
-          "type": "integer"
-        },
-        "initial_floor": {
-          "type": "integer"
-        },
-        "max_floor": {
-          "type": "integer"
-        },
-        "initial_gold": {
-          "type": "integer"
-        },
-        "initial_potions": {
-          "type": "integer"
-        },
-        "points_per_enemy": {
-          "type": "integer"
-        }
-      },
-      "additionalProperties": true
-    },
-    "game_states_definition": {
-      "type": "object",
-      "description": "Available game states",
-      "properties": {
-        "available": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "examples": ["menu", "playing", "paused", "gameOver", "victory", "levelUp", "loading"]
-          }
-        },
-        "default": {
-          "type": "string"
-        }
-      }
-    },
-    "input_handling": {
-      "type": "object",
-      "description": "Input configuration",
-      "properties": {
-        "keydown_events": {
-          "type": "boolean"
-        },
-        "keyup_events": {
-          "type": "boolean"
-        },
-        "supported_keys": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "pattern": "^(Key[A-Z]|Arrow(Up|Down|Left|Right)|Space|Enter|Escape|Digit[0-9]|Shift|Control|Alt)$"
-          }
-        },
-        "mouse_events": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enum": ["click", "mousemove", "mousedown", "mouseup", "wheel"]
-          }
-        },
-        "touch_events": {
-          "type": "boolean"
-        },
-        "gamepad_support": {
-          "type": "boolean"
-        }
-      }
-    },
-    "audio_config": {
-      "type": "object",
-      "description": "Audio configuration",
-      "properties": {
-        "enabled": {
-          "type": "boolean"
-        },
-        "music": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "path": {
-                "type": "string"
-              },
-              "loop": {
-                "type": "boolean"
-              }
-            }
-          }
-        },
-        "sound_effects": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "path": {
-                "type": "string"
-              }
-            }
-          }
-        }
-      }
-    },
-    "game_state_config": {
-      "type": "object",
-      "description": "Configuration for a specific game state",
-      "properties": {
-        "duration": {
-          "type": "integer",
-          "description": "Duration in frames (for temporary states)"
-        },
-        "canvas_rendering": {
-          "$ref": "#/definitions/canvas_rendering"
-        },
-        "input_transitions": {
-          "type": "object",
-          "description": "Key-to-state transitions",
-          "patternProperties": {
-            "^[a-z_]+$": {
-              "type": "string"
-            }
-          }
-        },
-        "auto_transition": {
-          "type": "object",
-          "properties": {
-            "target_state": {
-              "type": "string"
-            },
-            "delay": {
-              "type": "integer"
-            }
-          }
-        },
-        "controls": {
-          "type": "object",
-          "description": "Control mappings for this state",
-          "additionalProperties": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "collision_systems": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "canvas_rendering": {
-      "type": "object",
-      "description": "Canvas rendering configuration",
-      "properties": {
-        "background": {
-          "type": "string",
-          "description": "Background color or image"
-        },
-        "ui_elements": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ui_element"
-          }
-        }
-      },
-      "additionalProperties": true
-    },
-    "ui_element": {
-      "type": "object",
-      "description": "UI element specification",
-      "properties": {
-        "text": {
-          "type": "string"
-        },
-        "font": {
-          "type": "string"
-        },
-        "color": {
-          "type": "string",
-          "pattern": "^#[0-9A-Fa-f]{6}$"
-        },
-        "position": {
-          "type": "object",
-          "properties": {
-            "x": {
-              "oneOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "string",
-                  "enum": ["center", "left", "right"]
-                }
-              ]
-            },
-            "y": {
-              "type": "number"
-            },
-            "align": {
-              "type": "string",
-              "enum": ["left", "center", "right"]
-            }
-          }
-        },
-        "image": {
-          "type": "string"
-        },
-        "size": {
-          "$ref": "#/definitions/size_config"
-        }
-      }
-    },
-    "movement_system": {
-      "type": "object",
-      "description": "Player movement system",
-      "properties": {
-        "keys": {
-          "type": "object",
-          "properties": {
-            "up": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "down": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "left": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "right": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          }
-        },
-        "speed": {
-          "type": "number"
-        },
-        "movement_type": {
-          "type": "string",
-          "enum": ["continuous", "grid_based", "physics", "tile_based"]
-        },
-        "collision": {
-          "type": "string"
-        },
-        "diagonal_movement": {
-          "type": "boolean"
-        },
-        "acceleration": {
-          "type": "number"
-        },
-        "friction": {
-          "type": "number"
-        }
-      }
-    },
-    "combat_system": {
-      "type": "object",
-      "description": "Combat mechanics",
-      "properties": {
-        "player_attack": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "enum": ["ranged_projectile", "melee", "area_of_effect", "hitscan"]
-            },
-            "cooldown": {
-              "type": "integer"
-            },
-            "damage_calculation": {
-              "type": "string"
-            },
-            "knockback": {
-              "type": "number"
-            }
-          }
-        },
-        "enemy_attack": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string"
-            },
-            "melee_range": {
-              "type": "number"
-            },
-            "ranged_range": {
-              "type": "number"
-            },
-            "cooldown": {
-              "type": "integer"
-            }
-          }
-        },
-        "damage_formula": {
-          "type": "string"
-        },
-        "critical_hit": {
-          "type": "object",
-          "properties": {
-            "chance": {
-              "type": "number"
-            },
-            "multiplier": {
-              "type": "number"
-            }
-          }
-        }
-      }
-    },
-    "experience_system": {
-      "type": "object",
-      "description": "Experience and leveling",
-      "properties": {
-        "level_up_formula": {
-          "type": "string"
-        },
-        "stat_gains_per_level": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "number"
-          }
-        },
-        "health_restore_on_level": {
-          "type": "string",
-          "enum": ["full", "partial", "none"]
-        }
-      }
-    },
-    "loot_system": {
-      "type": "object",
-      "description": "Loot and rewards",
-      "properties": {
-        "gold_drops": {
-          "type": "boolean"
-        },
-        "item_drops": {
-          "type": "boolean"
-        },
-        "chest_contents": {
-          "type": "string"
-        },
-        "drop_rates": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "number"
-          }
-        }
-      }
-    },
-    "progression_system": {
-      "type": "object",
-      "description": "Game progression mechanics",
-      "properties": {
-        "floors": {
-          "type": "integer"
-        },
-        "levels": {
-          "type": "integer"
-        },
-        "waves": {
-          "type": "integer"
-        },
-        "difficulty_scaling": {
-          "type": "object",
-          "properties": {
-            "enemy_health_multiplier": {
-              "type": "number"
-            },
-            "enemy_attack_multiplier": {
-              "type": "number"
-            },
-            "enemy_count_increase": {
-              "type": "number"
-            },
-            "enemy_speed_multiplier": {
-              "type": "number"
-            }
-          }
-        }
-      }
-    },
-    "physics_system": {
-      "type": "object",
-      "description": "Physics simulation",
-      "properties": {
-        "gravity": {
-          "type": "number"
-        },
-        "friction": {
-          "type": "number"
-        },
-        "bounce": {
-          "type": "number"
-        },
-        "collision_detection": {
-          "type": "string",
-          "enum": ["AABB", "circle", "polygon", "pixel_perfect"]
-        }
-      }
-    },
-    "scoring_system": {
-      "type": "object",
-      "description": "Score and points",
-      "properties": {
-        "enabled": {
-          "type": "boolean"
-        },
-        "points_per_enemy": {
-          "type": "integer"
-        },
-        "points_per_level": {
-          "type": "integer"
-        },
-        "combo_multiplier": {
-          "type": "boolean"
-        },
-        "high_score_tracking": {
-          "type": "boolean"
-        }
-      }
-    },
-    "level_progression": {
-      "type": "object",
-      "description": "Level progression rules",
-      "properties": {
-        "trigger": {
-          "type": "string"
-        },
-        "requirement": {
-          "type": "string"
-        },
-        "action": {
-          "type": "string"
-        },
-        "difficulty_increase": {
-          "type": "boolean"
-        }
-      }
     }
   }
 }
